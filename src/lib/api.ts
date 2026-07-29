@@ -55,7 +55,6 @@ export async function api<T = unknown>(
       return retryRes.json() as Promise<T>;
     }
     setAccessToken(null);
-    throw new ApiError(401, "Session expired");
   }
 
   if (!res.ok) {

@@ -25,6 +25,7 @@ function ExploreContent() {
 
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
 
   const [search, setSearch] = useState(searchParams.get("search") || "");
@@ -53,6 +54,7 @@ function ExploreContent() {
     let cancelled = false;
     async function fetchBooks() {
       setLoading(true);
+      setError(null);
       try {
         const qs = buildQuery();
         const data = await api<{ books: Book[]; pagination: { totalPages: number } }>(
@@ -63,7 +65,10 @@ function ExploreContent() {
           setTotalPages(data.pagination.totalPages);
         }
       } catch {
-        if (!cancelled) setBooks([]);
+        if (!cancelled) {
+          setBooks([]);
+          setError("Failed to load books. Please try again later.");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -220,10 +225,21 @@ function ExploreContent() {
               ))}
         </div>
 
-        {!loading && books.length === 0 && (
+        {!loading && books.length === 0 && !error && (
           <div className="py-20 text-center">
             <p className="text-lg font-semibold text-maroon-800">No books found</p>
             <p className="mt-1 text-sm text-cream-600">Try adjusting your filters or search terms</p>
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="py-20 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+              <svg className="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <p className="text-lg font-semibold text-red-600">Something went wrong</p>
+            <p className="mt-1 text-sm text-cream-600">{error}</p>
+            <button onClick={() => window.location.reload()} className="mt-4 rounded-lg bg-maroon-800 px-5 py-2 text-sm font-medium text-cream-100 hover:bg-maroon-700 transition-colors">Try Again</button>
           </div>
         )}
 
