@@ -48,11 +48,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function refresh() {
       try {
-        const data = await api<{ accessToken: string; user: User }>(
-          "/api/auth/refresh",
-          { method: "POST" }
-        );
-        syncAuth(data.accessToken, data.user);
+        const res = await fetch("/api/auth/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json() as { accessToken: string; user: User };
+          syncAuth(data.accessToken, data.user);
+        } else {
+          clearAuth();
+        }
       } catch {
         clearAuth();
       } finally {

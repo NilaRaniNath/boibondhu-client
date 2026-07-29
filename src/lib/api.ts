@@ -66,7 +66,7 @@ export async function api<T = unknown>(
   return res.json() as Promise<T>;
 }
 
-async function tryRefreshToken(): Promise<boolean> {
+export async function tryRefreshToken(): Promise<boolean> {
   try {
     const res = await fetch(`${API_BASE}/api/auth/refresh`, {
       method: "POST",
