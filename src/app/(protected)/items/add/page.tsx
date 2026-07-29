@@ -304,14 +304,14 @@ export default function AddBookPage() {
   );
 }
 
-function Field({ label, type = "text", value, onChange, required = false }: {
+function Field({ label, type = "text", value, onChange, required = false, min }: {
   label: string; type?: string; value: string | number;
-  onChange: (v: string) => void; required?: boolean;
+  onChange: (v: string) => void; required?: boolean; min?: number;
 }) {
   return (
     <div>
       <label className="mb-1 block text-xs font-medium text-cream-600">{label}</label>
-      <input type={type} required value={value}
+      <input type={type} required value={value} min={min}
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none" />
     </div>
