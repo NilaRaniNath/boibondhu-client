@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -151,11 +152,13 @@ function HeroSection() {
                     className="absolute inset-0 transition-opacity duration-700 ease-in-out"
                     style={{ opacity: i === current ? 1 : 0 }}
                   >
-                    <img
+                    <Image
                       src={book.image}
                       alt={book.title}
-                      className="h-full w-full object-cover"
-                      loading={i === 0 ? "eager" : "lazy"}
+                      fill
+                      sizes="(max-width: 400px) 100vw, 400px"
+                      className="object-cover"
+                      priority={i === 0}
                     />
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-12">
                       <p className="text-sm font-semibold text-white">{book.title}</p>
@@ -282,11 +285,13 @@ function FeaturedBooks() {
               href={`/books/${book.id}`}
               className="group block overflow-hidden rounded-2xl border border-cream-300 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg"
             >
-              <div className="aspect-[3/4] overflow-hidden bg-cream-100">
-                <img
+              <div className="relative aspect-[3/4] overflow-hidden bg-cream-100">
+                <Image
                   src={book.image}
                   alt={book.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               </div>
               <div className="p-4">

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { api, ApiError } from "@/lib/api";
-import { BookPlus, Upload, Image, X, Loader2 } from "lucide-react";
+import { BookPlus, Upload, Image as ImageIcon, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const CATEGORIES = ["Academic", "Novel", "Comics", "QuestionBank", "Bengali Classic", "Fantasy", "Non-Fiction", "Self-Help", "Poetry", "Classic Fiction", "Others"];
@@ -205,9 +206,11 @@ export default function AddBookPage() {
 
           {imagePreview ? (
             <div className="relative inline-block">
-              <img
+              <Image
                 src={imagePreview}
-                alt="Cover preview"
+                alt="Book cover preview"
+                width={144}
+                height={192}
                 className="h-48 w-36 rounded-lg border border-cream-300 object-cover"
               />
               <button
@@ -224,7 +227,7 @@ export default function AddBookPage() {
               {/* URL Input */}
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <Image className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-cream-400" />
+                  <ImageIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-cream-400" />
                   <input
                     type="url"
                     placeholder="Paste image URL..."
@@ -304,14 +307,14 @@ export default function AddBookPage() {
   );
 }
 
-function Field({ label, type = "text", value, onChange, required = false, min }: {
+function Field({ label, type = "text", value, onChange, required: isRequired = false, min }: {
   label: string; type?: string; value: string | number;
   onChange: (v: string) => void; required?: boolean; min?: number;
 }) {
   return (
     <div>
       <label className="mb-1 block text-xs font-medium text-cream-600">{label}</label>
-      <input type={type} required value={value} min={min}
+      <input type={type} required={isRequired} value={value} min={min}
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-lg border border-cream-300 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none" />
     </div>

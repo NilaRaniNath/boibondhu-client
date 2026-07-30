@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# temp / server directories (belong to separate backend)
+UsersDELLAppDataLocalTempopencodeboibondhu-server/
+boibondhu-server/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { X, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
@@ -87,9 +88,11 @@ export default function OrderModal({ book, onClose, onSuccess }: Props) {
         ) : step === "details" ? (
           <div className="px-6 py-4">
             <div className="flex gap-4 rounded-xl bg-cream-50 p-4">
-              <img
+              <Image
                 src={book.coverImage}
                 alt={book.title}
+                width={64}
+                height={80}
                 className="h-20 w-16 rounded-lg object-cover"
               />
               <div>

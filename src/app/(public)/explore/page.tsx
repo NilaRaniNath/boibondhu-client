@@ -9,7 +9,6 @@ import SkeletonCard from "@/components/ui/SkeletonCard";
 import type { Book } from "@/lib/types";
 
 const CATEGORIES = ["", "Academic", "Novel", "Comics", "QuestionBank", "Bengali Classic", "Fantasy", "Non-Fiction", "Self-Help", "Poetry", "Classic Fiction", "Others"];
-const CONDITIONS = ["", "new", "like_new", "used"];
 
 export default function ExplorePage() {
   return (

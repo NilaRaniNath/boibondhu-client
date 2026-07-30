@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Server directories (separate backend, not part of client):
+    "UsersDELLAppDataLocalTempopencodeboibondhu-server/**",
+    "**/boibondhu-server/**",
   ]),
 ]);
 

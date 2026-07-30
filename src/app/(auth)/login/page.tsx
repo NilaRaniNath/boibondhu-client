@@ -3,24 +3,12 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { z } from "zod/v4";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { LogIn, Eye, EyeOff, UserPlus, Loader2 } from "lucide-react";
 
-const loginSchema = z.object({
-  email: z.email("Please enter a valid email"),
-  password: z.string().min(1, "Password is required"),
-});
-
-const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.email("Please enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
-
-type LoginForm = z.infer<typeof loginSchema>;
-type RegisterForm = z.infer<typeof registerSchema>;
+type LoginForm = { email: string; password: string };
+type RegisterForm = { name: string; email: string; password: string };
 
 function AuthForm() {
   const router = useRouter();

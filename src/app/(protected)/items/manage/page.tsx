@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
-import { Trash2, ExternalLink, BookOpen, Edit3, X } from "lucide-react";
+import { Trash2, ExternalLink, Edit3, X } from "lucide-react";
 import { toast } from "sonner";
 import type { Book } from "@/lib/types";
 
@@ -22,14 +23,21 @@ export default function ManageBooksPage() {
     if (user && user.role !== "admin") router.replace("/");
   }, [user, router]);
 
-  async function fetchBooks() {
-    try {
-      const data = await api<{ books: Book[] }>("/api/books?limit=100");
-      setBooks(data.books);
-    } catch { setBooks([]); } finally { setLoading(false); }
-  }
-
-  useEffect(() => { fetchBooks(); }, []);
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const data = await api<{ books: Book[] }>("/api/books?limit=100");
+        if (!cancelled) setBooks(data.books);
+      } catch {
+        if (!cancelled) setBooks([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, []);
 
   async function handleDelete(id: string) {
     if (!confirm("Remove this book?")) return;
@@ -73,7 +81,7 @@ export default function ManageBooksPage() {
                 {books.map((book) => (
                   <tr key={book._id} className="border-b border-cream-100 hover:bg-cream-50">
                     <td className="flex items-center gap-3 px-4 py-3">
-                      <img src={book.coverImage} alt="" className="h-10 w-8 rounded object-cover" />
+                      <Image src={book.coverImage} alt={book.title} width={32} height={40} className="h-10 w-8 rounded object-cover" />
                       <div>
                         <p className="font-medium text-maroon-800 line-clamp-1">{book.title}</p>
                         <p className="text-xs text-cream-500">{book.author}</p>
@@ -219,7 +227,7 @@ function EditModal({ book, onClose, onSaved }: { book: Book; onClose: () => void
           <Field label="Cover Image URL" value={form.coverImage} onChange={(v) => update("coverImage", v)} required />
 
           {form.coverImage && (
-            <img src={form.coverImage} alt="Preview" className="h-32 w-24 rounded-lg border border-cream-300 object-cover" />
+            <Image src={form.coverImage} alt="Book cover preview" width={96} height={128} className="h-32 w-24 rounded-lg border border-cream-300 object-cover" />
           )}
 
           <div className="grid gap-4 sm:grid-cols-2">

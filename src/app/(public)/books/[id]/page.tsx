@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, use } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Star, ShoppingCart, BookOpen, ChevronLeft } from "lucide-react";
@@ -28,7 +29,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
   const [showOrder, setShowOrder] = useState(false);
   const [selectedImg, setSelectedImg] = useState(0);
 
-  const fetchData = useCallback(async () => {
+  const refreshData = useCallback(async () => {
     setLoading(true);
     try {
       const bookData = await api<Book>(`/api/books/${id}`);
@@ -49,7 +50,33 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
     }
   }, [id, router]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      try {
+        const bookData = await api<Book>(`/api/books/${id}`);
+        if (cancelled) return;
+        setBook(bookData);
+
+        const [reviewsData, relatedData] = await Promise.all([
+          api<Review[]>(`/api/reviews/${id}`).catch(() => []),
+          api<{ books: Book[] }>(
+            `/api/books?category=${encodeURIComponent(bookData.category)}&limit=4`
+          ).catch(() => ({ books: [] })),
+        ]);
+        if (cancelled) return;
+        setReviews(reviewsData);
+        setRelated(relatedData.books.filter((b: Book) => b._id !== id).slice(0, 4));
+      } catch {
+        if (!cancelled) router.push("/explore");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, [id, router]);
 
   function handleBuyNow() {
     if (!user) {
@@ -80,9 +107,11 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
           {/* Gallery */}
           <div>
             <div className="overflow-hidden rounded-2xl border border-cream-300 bg-white">
-              <img
+              <Image
                 src={images[selectedImg]}
                 alt={book.title}
+                width={400}
+                height={533}
                 className="aspect-[3/4] w-full object-cover"
               />
             </div>
@@ -96,7 +125,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
                       selectedImg === i ? "border-green-500" : "border-cream-300"
                     }`}
                   >
-                    <img src={img} alt="" className="h-full w-full object-cover" />
+                    <Image src={img} alt="" width={48} height={64} className="h-full w-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -233,7 +262,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
         <OrderModal
           book={book}
           onClose={() => setShowOrder(false)}
-          onSuccess={() => { setShowOrder(false); fetchData(); }}
+          onSuccess={() => { setShowOrder(false); refreshData(); }}
         />
       )}
     </div>
