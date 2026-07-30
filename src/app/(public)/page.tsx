@@ -22,7 +22,16 @@ import {
   Heart,
   HelpCircle,
   ChevronLeft,
+  TrendingUp,
 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 /* ─── Hero ─── */
 const SLIDER_BOOKS = [
@@ -534,7 +543,7 @@ function WhyBoiBondhu() {
   );
 }
 
-/* ─── Stats ─── */
+/* ─── Stats (Recharts) ─── */
 function LiveStats() {
   const stats = [
     { label: "Total Books", value: "10,000+", icon: BookOpen },
@@ -542,10 +551,30 @@ function LiveStats() {
     { label: "Happy Readers", value: "15,000+", icon: Users },
   ];
 
+  const chartData = [
+    { name: "Total Books", count: 10000 },
+    { name: "Orders\nDelivered", count: 25000 },
+    { name: "Happy\nReaders", count: 15000 },
+  ];
+
   return (
     <section className="bg-maroon-800 py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-8 sm:grid-cols-3">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-center text-2xl font-bold text-cream-100 sm:text-3xl">
+            BoiBondhu in Numbers
+          </h2>
+          <p className="mt-2 text-center text-cream-400">
+            Trusted by thousands across Bangladesh
+          </p>
+        </motion.div>
+
+        <div className="mt-10 grid gap-8 sm:grid-cols-3">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
@@ -567,6 +596,53 @@ function LiveStats() {
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-12"
+        >
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <TrendingUp className="h-5 w-5 text-green-400" />
+            <h3 className="text-lg font-semibold text-cream-200">Growth Overview</h3>
+          </div>
+          <div className="mx-auto max-w-2xl rounded-2xl bg-white/10 p-6 backdrop-blur-sm">
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: "#EDD5BB", fontSize: 13 }}
+                  axisLine={{ stroke: "#A67D55" }}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fill: "#EDD5BB", fontSize: 12 }}
+                  axisLine={{ stroke: "#A67D55" }}
+                  tickLine={false}
+                  tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#FFFDF9",
+                    border: "1px solid #EDD5BB",
+                    borderRadius: "12px",
+                    color: "#1a1a1a",
+                    fontSize: "13px",
+                  }}
+                  formatter={(value) => [`${(value ?? 0).toLocaleString()}`, "Count"]}
+                />
+                <Bar
+                  dataKey="count"
+                  fill="#4EB36E"
+                  radius={[6, 6, 0, 0]}
+                  barSize={48}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
